@@ -32,13 +32,15 @@ struct species
 
 
 // define function prototypes
-void header();					// display program info to user
+void header();						// display program info to user
 void dataEntry(vector<species>&);	// allows data entry of animals
 void dataDisplay(const vector<species>);// displays data to user
-bool positiveValid(int);		// validates a number is positive
-bool menuValid(int);			// validates menu is between first and quit option
+bool positiveValid(int);			// validates a number is positive
+bool menuValid(int);				// validates menu is between first and quit option
 bool noneValid(const char name[]);	// validates user input is not none
-bool exitProgram();				// ask user if they really want to quit
+bool duplicateValid(const vector<species>,
+	const char name[]);	// validates user has not entered duplicate
+bool exitProgram();					// ask user if they really want to quit
 
 int main()
 {
@@ -166,21 +168,29 @@ bool exitProgram()
 }
 
 // lets user enter data on the animal types, if user enters none, quit out
+// Added "&" to the argument because otherwise the changes were local
+// and did not appear to the dataDisplay function
 void dataEntry(vector<species> &animalPen)
 {
 	string input;				// temporary input string
 	bool noneFlag = true;		// flag for none 
 	species newAnimal;			// temporary struct for data entry
 
-	// loop until none input or max types
+	// loop until none input
 	while (noneFlag)
 	{
-		cout << "Please enter an animal type (none to stop): ";
-		cin.getline(newAnimal.typeAnimal,TYPE_SIZE);
+		do // ask user for animal name, if duplicate then repeat prompt
+		{  // if not duplicate, or user entered none, stop looping
+			cout << "Please enter an animal type (none to stop): ";
+			cin.getline(newAnimal.typeAnimal, TYPE_SIZE);
+		} while (duplicateValid(animalPen, newAnimal.typeAnimal));
 		// if user types none, set flag to false and exit loop
 		if (noneValid(newAnimal.typeAnimal))
 			noneFlag = false;
-		// if not none, ask for the rest of info
+
+		// if not none and not duplicate, ask for the rest of info. 
+		// Added endangered=false because it would always be true once 
+		// one entry is true, never false anymore
 		if (noneFlag)
 		{
 			do
@@ -200,9 +210,24 @@ void dataEntry(vector<species> &animalPen)
 	cout << endl;
 }
 
+// test if name is a duplicate. If it is, return true and keep looping
+// if not, return false and exit loop
+bool duplicateValid(const vector <species> animal, const char name[])
+{
+	for (auto index : animal)
+		if (!strcmp(index.typeAnimal, name))
+		{
+			cout << "Error - this animal is already in the database. "
+				<< "Please reenter.\n";
+			return true;
+		}
+	return false;
+}
+
+
 // display contents of animal array to user, if an entry has 0 number of
 // animals, end the loop and redisplay menu
-void dataDisplay( const vector<species> animals)
+void dataDisplay(const vector<species> animals)
 {
 	// if the vector is empty, give an error 
 	if (animals.empty())
