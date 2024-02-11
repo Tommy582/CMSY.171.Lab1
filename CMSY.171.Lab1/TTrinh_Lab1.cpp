@@ -243,6 +243,7 @@ void dataDisplay(const vector<species> animals)
 		cout << "You have not entered any data, returning to menu.\n\n";
 	else
 	{
+		cout << "\nThere are " << animals.size() << " animals in the database.\n";
 		for (int index = 0; index < animals.size(); index++)
 		{
 			cout << "\nAnimal: " << animals.at(index).typeAnimal << endl;
