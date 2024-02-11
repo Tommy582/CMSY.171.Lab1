@@ -16,7 +16,8 @@ const int
 MIN_COUNT = 0,			// minimum number of animals
 ADD_CHOICE = 1,			// choice to add an animal
 DISPLAY_CHOICE = 2,		// choice to display animals
-QUIT_CHOICE = 3,		// choice to quit program
+ENDANGERED_CHOICE = 3,	// choice to display endangered animals
+QUIT_CHOICE = 4,		// choice to quit program
 MENU_CHOICE_SIZE = 1,	// size of menu choice field
 ENDANGERED_POP = 100,	// population considered endangered
 TYPE_SIZE = 20;			// size of the animal type field
@@ -35,6 +36,7 @@ struct species
 void header();						// display program info to user
 void dataEntry(vector<species>&);	// allows data entry of animals
 void dataDisplay(const vector<species>);// displays data to user
+void endangeredDisplay(const vector<species>);// displays endangered animals
 bool positiveValid(int);			// validates a number is positive
 bool menuValid(int);				// validates menu is between first and quit option
 bool noneValid(const char name[]);	// validates user input is not none
@@ -60,6 +62,7 @@ int main()
 		{
 			cout << ADD_CHOICE << ". Add animal(s)\n";
 			cout << DISPLAY_CHOICE << ". Display animals\n";
+			cout << ENDANGERED_CHOICE << ". Display endangered animals\n";
 			cout << QUIT_CHOICE << ". Quit\n\n";
 			cout << "Enter the menu choice: ";
 			getline(cin, input);
@@ -79,6 +82,11 @@ int main()
 			dataDisplay(animalPen);
 			break;
 		}
+		case ENDANGERED_CHOICE:
+		{
+			endangeredDisplay(animalPen);
+			break;
+		}
 		case QUIT_CHOICE:
 		{
 			if (exitProgram())
@@ -93,7 +101,8 @@ int main()
 		}
 	} while (menuChoice != QUIT_CHOICE);
 
-
+	// clear the vector
+	animalPen.clear();
 
 	// goodbye message
 	cout << "\nThank you for using the CMSY 171 Animal Count Program\n\n";
@@ -246,4 +255,22 @@ void dataDisplay(const vector<species> animals)
 		}
 
 	}
+}
+
+// display endangered species to user, if there are no endangered species
+// then counter variable is equal to 0, which is the same as false
+// if counter is incremented, it is not 0, which is the same as true
+// if counter is false, display error message and redisplay menu
+void endangeredDisplay(const vector<species> animals)
+{
+	int counter = 0;	// temporary counter variable
+	for ( auto status:animals)
+		if (status.endangered)
+		{
+			cout << "Animal: " << status.typeAnimal << " is endangered!!\n";
+			counter++;
+		}
+	if (!counter)
+		cout << "There are no endangered species. Redisplaying menu.\n";
+	cout << endl;
 }
